@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Treasure Hunt</title>
+    <style>
+        :root {
+            --accent: #ff9933;
+            --bg: #fffaf2;
+            --text: #333;
+            --success: #1b8a5a;
+            --error: #c0392b;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1.5rem;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .option-btn {
+            padding: 0.9rem;
+            font-size: 1rem;
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .option-btn.selected {
+            background: var(--accent);
+            color: white;
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .progress {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fff3e6;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Treasure Hunt</h1>
+        <p><strong>Question:</strong> What is the main ingredient of Sleepy?</p>
+
+        <div class="options">
+            <button class="option-btn" onclick="checkAnswer('vanilla')">Vanilla</button>
+            <button class="option-btn" onclick="checkAnswer('lavender')">Lavender</button>
+            <button class="option-btn" onclick="checkAnswer('rose')">Rose</button>
+            <button class="option-btn" onclick="checkAnswer('citrus')">Citrus</button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <script>
+        const correctAnswer = "lavender"; // change for each page
+        const letter = "S";               // letter for this clue
+        const progressKey = "treasure_letters";
+
+        // Display current progress
+        function showProgress() {
+            const progressBox = document.getElementById("progress");
+            const letters = JSON.parse(localStorage.getItem(progressKey)) || [];
+            if (letters.length === 0) {
+                progressBox.textContent = "You haven't found any letters yet.";
+            } else {
+                progressBox.innerHTML = `🪙 Letters collected so far: <strong>${letters.join(" ")}</strong>`;
+            }
+        }
+
+        function checkAnswer(choice) {
+            const message = document.getElementById("message");
+            const buttons = document.querySelectorAll(".option-btn");
+
+            // Disable buttons after a choice
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = "default";
+                if (btn.textContent.toLowerCase() === choice) {
+                    btn.classList.add("selected");
+                }
+            });
+
+            if (choice === correctAnswer) {
+                message.style.color = "var(--success)";
+                message.innerHTML = `🎉 Correct!<br>Your letter is <strong>${letter}</strong>.`;
+
+                // Save progress
+                let letters = JSON.parse(localStorage.getItem(progressKey)) || [];
+                if (!letters.includes(letter)) {
+                    letters.push(letter);
+                    localStorage.setItem(progressKey, JSON.stringify(letters));
+                }
+
+                // Update the display
+                showProgress();
+            } else {
+                message.style.color = "var(--error)";
+                message.innerHTML = `❌ Not quite — try again next time!`;
+            }
+        }
+
+        // Show progress on load
+        window.onload = showProgress;
+    </script>
+
+</body>
+
+</html>
